@@ -20,6 +20,7 @@ import ThemedText from "@/components/ThemedText";
 import { useRef } from "react";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import SubscribeModal from "@/components/SubscribeModal";
+import { SignedIn, SignedOut, useAuth } from "@clerk/clerk-expo";
 
 const AnimatedTouchableOpacity =
     Animated.createAnimatedComponent(TouchableOpacity);
@@ -30,6 +31,7 @@ export default function Index() {
     const textColor = Colors[colorScheme ?? "light"].text;
     const subscribeModalRef = useRef<BottomSheetModal>(null);
     const { width } = useWindowDimensions();
+    const { signOut } = useAuth();
 
     const handlePresentSubscribeModalPress = () =>
         subscribeModalRef.current?.present();
@@ -69,23 +71,31 @@ export default function Index() {
                     </AnimatedTouchableOpacity>
                 </Link>
 
-                <Link
-                    href={"/login"}
-                    style={[styles.btn, { borderColor: textColor }]}
-                    asChild
-                >
-                    <AnimatedTouchableOpacity entering={FadeInLeft.delay(100)}>
-                        <ThemedText style={styles.btnText}>Log in</ThemedText>
-                    </AnimatedTouchableOpacity>
-                </Link>
+                <SignedOut>
+                    <Link
+                        href={"/login"}
+                        style={[styles.btn, { borderColor: textColor }]}
+                        asChild
+                    >
+                        <AnimatedTouchableOpacity
+                            entering={FadeInLeft.delay(100)}
+                        >
+                            <ThemedText style={styles.btnText}>
+                                Log in
+                            </ThemedText>
+                        </AnimatedTouchableOpacity>
+                    </Link>
+                </SignedOut>
 
-                <AnimatedTouchableOpacity
-                    // onPress={() => signOut()}
-                    entering={FadeInLeft.delay(100)}
-                    style={[styles.btn, { borderColor: textColor }]}
-                >
-                    <ThemedText style={styles.btnText}>Sign out</ThemedText>
-                </AnimatedTouchableOpacity>
+                <SignedIn>
+                    <AnimatedTouchableOpacity
+                        onPress={() => signOut()}
+                        entering={FadeInLeft.delay(100)}
+                        style={[styles.btn, { borderColor: textColor }]}
+                    >
+                        <ThemedText style={styles.btnText}>Sign out</ThemedText>
+                    </AnimatedTouchableOpacity>
+                </SignedIn>
 
                 <AnimatedTouchableOpacity
                     style={[styles.btn, { borderColor: textColor }]}
